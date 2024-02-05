@@ -111,7 +111,7 @@ def train(rank, world_size, args):
         shuffle=False,
         num_workers=8,
         pin_memory=True,
-        discrete=args.discrete,
+        # discrete=args.discrete,
     )
 
     ####################################################################################
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--discrete",
-        action="store_true",
+        default=False,
         help="use discrete units.",
     )
     args = parser.parse_args()

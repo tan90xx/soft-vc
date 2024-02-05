@@ -26,16 +26,16 @@ logger = logging.getLogger(__name__)
 # Define hyperparameters for training:
 ########################################################################################
 
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 LEARNING_RATE = 2e-5
 BETAS = (0.9, 0.98)
-EPS = 1e-06
-WEIGHT_DECAY = 1e-2
+EPS = 0.000000001 # 1e-06
+WEIGHT_DECAY = 0.0 # 1e-2
 MAX_NORM = 10
-STEPS = 25000
+STEPS = 900000 # 25000
 LOG_INTERVAL = 5
 VALIDATION_INTERVAL = 1000
-CHECKPOINT_INTERVAL = 5000
+CHECKPOINT_INTERVAL = 100000 # 5000
 BACKEND = "nccl"
 INIT_METHOD = "tcp://localhost:54321"
 
@@ -389,12 +389,19 @@ def train(rank, world_size, args):
         # Log training metrics
         ####################################################################################
 
-        logger.info(
-            f"""
-            train -- epoch: {epoch}, masked loss: {epoch_masked_loss.value:.4f}, unmasked loss: {epoch_unmasked_loss.value:.4f}, 
-                     masked accuracy: {epoch_masked_accuracy.value * 100:.2f}, umasked accuracy: {epoch_unmasked_accuracy.value * 100:.2f}
-            """
-        )
+        if args.mask:
+            logger.info(
+                f"""
+                train -- epoch: {epoch}, masked loss: {epoch_masked_loss.value:.4f}, unmasked loss: {epoch_unmasked_loss.value:.4f}, 
+                         masked accuracy: {epoch_masked_accuracy.value * 100:.2f}, umasked accuracy: {epoch_unmasked_accuracy.value * 100:.2f}
+                """
+            )
+        else:
+            logger.info(
+                f"""
+                train -- epoch: {epoch}
+                """
+            )
 
         # ==================================================================================#
         # End training loop

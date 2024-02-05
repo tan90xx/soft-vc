@@ -18,17 +18,17 @@ class LogMelSpectrogram(torch.nn.Module):
             sample_rate=16000,
             n_fft=1024,
             win_length=1024,
-            hop_length=160,
+            hop_length=320,
             center=False,
             power=1.0,
             norm="slaney",
             onesided=True,
-            n_mels=128,
+            n_mels=80,
             mel_scale="slaney",
         )
 
     def forward(self, wav):
-        wav = F.pad(wav, ((1024 - 160) // 2, (1024 - 160) // 2), "reflect")
+        wav = F.pad(wav, ((1024 - 320) // 2, (1024 - 320) // 2), "reflect")
         mel = self.melspctrogram(wav)
         logmel = torch.log(torch.clamp(mel, min=1e-5))
         return logmel
@@ -54,8 +54,8 @@ class MelDataset(Dataset):
         self.train = train
         self.finetune = finetune
 
-        suffix = ".wav" if not finetune else ".npy"
-        pattern = f"train/**/*{suffix}" if train else f"dev/**/*{suffix}"
+        suffix = ".WAV" if not finetune else ".npy"
+        pattern = f"train/normal/*{suffix}" if train else f"dev/normal/*{suffix}"
 
         self.metadata = [
             path.relative_to(self.data_dir).with_suffix("")
@@ -71,7 +71,7 @@ class MelDataset(Dataset):
         path = self.metadata[index]
         wav_path = self.wavs_dir / path
 
-        info = torchaudio.info(wav_path.with_suffix(".wav"))
+        info = torchaudio.info(wav_path.with_suffix(".WAV"))
         if info.sample_rate != self.sample_rate:
             raise ValueError(
                 f"Sample rate {info.sample_rate} doesn't match target of {self.sample_rate}"
@@ -92,7 +92,7 @@ class MelDataset(Dataset):
             frame_offset = random.randint(0, max(frame_diff, 0))
 
         wav, _ = torchaudio.load(
-            filepath=wav_path.with_suffix(".wav"),
+            filepath=wav_path.with_suffix(".WAV"),
             frame_offset=frame_offset if self.train else 0,
             num_frames=self.segment_length if self.train else -1,
         )

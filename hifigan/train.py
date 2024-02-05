@@ -1,6 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
+import json
 
 import torch
 import torch.nn.functional as F
@@ -21,7 +22,7 @@ from hifigan.discriminator import (
 )
 from hifigan.dataset import MelDataset, LogMelSpectrogram
 from hifigan.utils import load_checkpoint, save_checkpoint, plot_spectrogram
-
+import hifigan
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -68,7 +69,11 @@ def train_model(rank, world_size, args):
 
     writer = SummaryWriter(log_dir) if rank == 0 else None
 
-    generator = HifiganGenerator().to(rank)
+    with open("./hifigan/my_config_v1_16000.json", "r") as f:
+        h = json.load(f)
+    h = hifigan.AttrDict(h)
+
+    generator = HifiganGenerator(h).to(rank)
     discriminator = HifiganDiscriminator().to(rank)
 
     generator = DDP(generator, device_ids=[rank])
@@ -171,8 +176,8 @@ def train_model(rank, world_size, args):
 
             # Discriminator
             optimizer_discriminator.zero_grad()
-
             wavs_ = generator(mels.squeeze(1))
+            wavs_ = wavs_[:, :, :wavs.size(2)]
             mels_ = melspectrogram(wavs_)
 
             scores, _ = discriminator(wavs)

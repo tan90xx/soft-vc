@@ -12,6 +12,7 @@ from tqdm import tqdm
 def process_wav(in_path, out_path, sample_rate):
     wav, sr = torchaudio.load(in_path)
     wav = resample(wav, sr, sample_rate)
+    out_path[-4:] = ".wav"
     torchaudio.save(out_path, wav, sample_rate)
     return out_path, wav.size(-1) / sample_rate
 
@@ -22,7 +23,7 @@ def preprocess_dataset(args):
     futures = []
     executor = ProcessPoolExecutor(max_workers=cpu_count())
     print(f"Resampling audio in {args.in_dir}")
-    for in_path in args.in_dir.rglob("*.wav"):
+    for in_path in args.in_dir.rglob("*.WAV"):
         relative_path = in_path.relative_to(args.in_dir)
         out_path = args.out_dir / relative_path
         out_path.parent.mkdir(parents=True, exist_ok=True)

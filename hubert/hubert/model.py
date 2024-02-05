@@ -8,6 +8,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+URLS = {
+    "hubert-discrete": "https://github.com/bshall/hubert/releases/download/v0.2/hubert-discrete-96b248c5.pt",
+    "hubert-soft": "https://github.com/bshall/hubert/releases/download/v0.2/hubert-soft-35d9f29f.pt",
+    "kmeans100": "https://github.com/bshall/hubert/releases/download/v0.2/kmeans100-50f36a95.pt",
+}
 
 class Hubert(nn.Module):
     def __init__(self, num_label_embeddings: int = 100, mask: bool = True):
