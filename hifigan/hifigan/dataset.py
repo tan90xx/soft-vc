@@ -18,17 +18,17 @@ class LogMelSpectrogram(torch.nn.Module):
             sample_rate=16000,
             n_fft=1024,
             win_length=1024,
-            hop_length=320,
+            hop_length=160,
             center=False,
             power=1.0,
             norm="slaney",
             onesided=True,
-            n_mels=80,
+            n_mels=128,
             mel_scale="slaney",
         )
 
     def forward(self, wav):
-        wav = F.pad(wav, ((1024 - 320) // 2, (1024 - 320) // 2), "reflect")
+        wav = F.pad(wav, ((1024 - 160) // 2, (1024 - 160) // 2), "reflect")
         mel = self.melspctrogram(wav)
         logmel = torch.log(torch.clamp(mel, min=1e-5))
         return logmel

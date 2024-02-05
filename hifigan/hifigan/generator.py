@@ -24,7 +24,7 @@ class HifiganGenerator(torch.nn.Module):
         self.num_kernels = len(h.resblock_kernel_sizes)
         self.num_upsamples = len(h.upsample_rates)
         self.conv_pre = weight_norm(
-            Conv1d(80, h.upsample_initial_channel, 7, 1, padding=3)
+            Conv1d(h.num_mels, h.upsample_initial_channel, 7, 1, padding=3)
         )
         resblock = ResBlock
 

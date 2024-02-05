@@ -69,7 +69,7 @@ def train_model(rank, world_size, args):
 
     writer = SummaryWriter(log_dir) if rank == 0 else None
 
-    with open("./hifigan/my_config_v1_16000.json", "r") as f:
+    with open("/home/nis/tianyi.tan/hifigan/hifigan/config.json", "r") as f:
         h = json.load(f)
     h = hifigan.AttrDict(h)
 
